@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  socket:
+    image: socket-server
+    build:
+      context: ./chat-api
+      dockerfile: ./cmd/socketserver/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./chat-api:/app
+    command: ./app
+    depends_on:
+      - backend
+    networks:
+      - webnet
+    environment:
+      - SERVER_MESSAGE_URL=http://backend:3001/v1/message
+
+  backend:
+    image: chat-api
+    build:
+      context: ./chat-api
+      dockerfile: ./cmd/server/Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./chat-api:/app
+    command: ./app
+    networks:
+      - webnet
+    environment:
+      - MONGODB_URI=YOUR_MONGODB_URI
+      - MONGODB_DATABASE=chatDb
+      - APP_NAME=chat-api
+      - APP_PORT=3001
+      - ACCESS_SECRET=YOUR_TOKEN_SECRET
+
+  frontend:
+    image: frontend-app
+    stdin_open: true
+    build:
+      context: ./chat-client
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./chat-client:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_SERVER_URL=http://localhost:3001/v1
+      - REACT_APP_SOCKET_SERVER_URL=ws://127.0.0.1:8080/ws
+    depends_on:
+      - backend
+      - socket
+    command: npm start
+
+networks:
+  webnet:
+    driver: bridge

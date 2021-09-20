@@ -1,0 +1,74 @@
+.messenger {
+  height: calc(100vh - 75px);
+  display: flex;
+}
+
+.myMessages {
+  flex: 4;
+}
+
+.newMessageButton {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #0e60e0;
+  color: white;
+}
+
+.messageBox {
+  flex: 8;
+  padding-right: 40px;
+}
+
+.messageBoxWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  position: relative;
+}
+
+.messageBoxTop {
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 20px;
+}
+
+.myMessagesWrapper,
+.messageBoxWrapper,
+.inactiveMessagesWrapper {
+  padding: 10px;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.messageBoxBottom {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.chatSubmit {
+  width: 70px;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #0e60e0;
+  color: white;
+}
+
+.messageBoxBottomTextarea {
+  width: 80%;
+  height: 90px;
+  padding: 10px;
+}
+
+.noConversation {
+  position: absolute;
+  font-size: 50px;
+  color: rgb(224, 222, 222);
+  cursor: default;
+}

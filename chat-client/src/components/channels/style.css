@@ -1,0 +1,23 @@
+.channel {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.channel:hover {
+  background-color: rgb(248, 245, 245);
+}
+
+.channelTime {
+  font-size: small;
+  font-weight: bold;
+  padding-left: 30px;
+}
+
+.channelName {
+  font-size: large;
+  font-weight: 500;
+}
