@@ -31,7 +31,7 @@ This project uses a number of technologies, some of which include
 
 To run the project you should have `Docker` and `Docker-Compose` installed on your system. In the `docker-compose.yml` insert your mongodb connection string in the `MONGODB_URI` environment variable as well as a random string for your `ACCESS_SECRET`. Open a terminal and navigate to the root directory of the project. Run the following command:
 
-- `docker-compose up`
+- `docker-compose up --build`
 
 Open a browser and place this address on your address bar:
 

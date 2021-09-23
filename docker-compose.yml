@@ -31,6 +31,7 @@ services:
     networks:
       - webnet
     environment:
+      - ALLOWED_ORIGINS=http://backend:3001
       - MONGODB_URI=YOUR_MONGODB_URI
       - MONGODB_DATABASE=chatDb
       - APP_NAME=chat-api
