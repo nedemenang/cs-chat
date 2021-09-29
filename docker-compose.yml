@@ -31,11 +31,11 @@ services:
     networks:
       - webnet
     environment:
-      - ALLOWED_ORIGINS=http://backend:3001
+      - ALLOWED_ORIGINS=http://localhost:3000
       - MONGODB_URI=YOUR_MONGODB_URI
       - MONGODB_DATABASE=chatDb
       - APP_NAME=chat-api
-      - APP_PORT=3001
+      - PORT=3001
       - ACCESS_SECRET=YOUR_TOKEN_SECRET
 
   frontend:
