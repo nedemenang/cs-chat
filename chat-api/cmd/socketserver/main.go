@@ -91,7 +91,6 @@ func main() {
 		read(hub, ws)
 		return nil
 	})
-
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
@@ -101,11 +100,13 @@ func read(hub *Hub, client *websocket.Conn) {
 		var message Message
 		httpClient := &http.Client{}
 		err := client.ReadJSON(&message)
+
 		if !errors.Is(err, nil) {
 			log.Printf("error occurred: %v", err)
 			delete(hub.clients, client)
 			break
 		}
+
 		message.TimeStamp = time.Now()
 		requestBody, _ := json.Marshal(message)
 		req, err := http.NewRequest(http.MethodPost, os.Getenv("SERVER_MESSAGE_URL"), bytes.NewBuffer(requestBody))

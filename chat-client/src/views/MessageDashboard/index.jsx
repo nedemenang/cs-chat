@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
 import { notification, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Redirect } from "react-router-dom";
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 import "./style.css";
 import Channels from "../../components/channels/index";
 import Message from "../../components/message/index";
@@ -12,11 +13,10 @@ const {
   getChannel,
   updateChannelStatus,
 } = require("../../services/index");
-const socket = new WebSocket(process.env.REACT_APP_SOCKET_SERVER_URL);
 
 export default function Index() {
-  // const [inActiveMessages, setInActiveMessages] = useState([]);
   const [state, dispatch] = useContext(Context);
+  const [socketUrl, setSocketUrl] = useState(process.env.REACT_APP_SOCKET_SERVER_URL);
   const [myChannels, setMyChannels] = useState([]);
   const [activeChannels, setActiveChannels] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState({});
@@ -26,6 +26,16 @@ export default function Index() {
   const [redirect, setRedirect] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef();
+
+  const {
+    sendMessage,
+    lastMessage,
+    readyState,
+  } = useWebSocket(socketUrl, {
+    onOpen: () => console.log('opened'),
+    //Will attempt to reconnect on all close events, such as server shutting down
+    shouldReconnect: (closeEvent) => true,
+  });
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -41,22 +51,12 @@ export default function Index() {
       abortController.abort();
     };
   }, [arrivedMessage]);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    socket.onopen = () => {
-      console.log("Connected");
-    };
-
-    socket.onmessage = (e) => {
-      console.log(JSON.parse(e.data));
-      setArrivedMessage(JSON.parse(e.data));
-    };
-    return () => {
-      socket.close();
-      abortController.abort();
-    };
-  }, []);
+  
+  useMemo(() => {
+    if (lastMessage) {
+      setArrivedMessage(JSON.parse(lastMessage.data));
+    }
+  }, [lastMessage]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({behaviour: "smooth"});
@@ -106,7 +106,16 @@ export default function Index() {
           setSelectedMessages(data.messages);
         }
       } catch (error) {
-        console.log(error);
+        notification.error({
+          message: "An error occured!",
+          description: error,
+          placement: "topRight",
+          duration: 2.0,
+          onClose: () => {
+            setRedirect(null);
+            setIsLoading(false);
+          },
+        });
       }
       setIsLoading(false);
     };
@@ -121,7 +130,7 @@ export default function Index() {
     if (selectedChannel?.id === undefined) {
       notification.error({
         message: "Could not send message",
-        description: "Please select a channel to send message",
+        description: "Please select a conversation to send message",
         placement: "topRight",
         duration: 1.5,
         onClose: () => {
@@ -148,7 +157,7 @@ export default function Index() {
       await updateChannelStatus(requestBody);
     }
 
-    socket.send(JSON.stringify(message));
+    sendMessage(JSON.stringify(message));
   };
 
   if (state.user.role === "USER") {
@@ -195,7 +204,7 @@ export default function Index() {
                       onChange={(e) => setNewMessage(e.target.value)}
                       value={newMessage}
                     ></textarea>
-                    <button className="chatSubmit" onClick={handleSubmit}>
+                    <button disabled={readyState !== ReadyState.OPEN} className="chatSubmit" onClick={handleSubmit}>
                       {isLoading ? (
                         <Spin
                           indicator={

@@ -25,7 +25,7 @@ func main() {
 		Validator(validation.InstanceGoPlayground).
 		DbNoSQL(database.InstanceMongoDB)
 
-	app.WebServerPort(os.Getenv("APP_PORT")).
+	app.WebServerPort(os.Getenv("PORT")).
 		WebServer(router.InstanceGin).
 		Start()
 }
